@@ -242,17 +242,23 @@ Address and ETH input pattern:
     </FormLabel>
 
     <EvmAccount
-      v-if="recipient"
-      :address="recipient"
+      v-if="recipientAddress"
+      :address="recipientAddress"
       resolve-ens
     />
   </Form>
 </template>
 
 <script setup lang="ts">
+import { isAddress, type Address } from 'viem'
+
 const recipient = ref('')
 const ethAmount = ref('')
 const weiAmount = ref<bigint | null>(null)
+
+const recipientAddress = computed<Address | undefined>(() =>
+  isAddress(recipient.value) ? recipient.value : undefined,
+)
 </script>
 ```
 
