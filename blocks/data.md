@@ -106,7 +106,9 @@ Client methods agents should use:
 | `client.fetch(query, ...args)` | One-shot fetch. Returns fresh cache when possible, otherwise fetches. |
 | `client.subscribe(query, args, callback)` | Reactive subscription with cache, background revalidation, and live watchers. |
 | `client.invalidate(query, ...args)` | Clears a cache entry and revalidates active subscribers. |
+| `client.waitForChange(query, args, predicate, options?)` | Poll fresh source data until a post-write predicate passes, updating cache/subscribers when it does. |
 | `client.getSourceHealth(sourceId)` | Inspect failures, latency, and backoff state. |
+| `client.reset()` | Clear cache, health state, active watchers, and in-flight dedupe state. |
 
 ### Query Definition
 
@@ -347,6 +349,17 @@ UI behavior:
 async function refreshMintData() {
   await queryClient.invalidate(tokenTransfersQuery, collection.value, tokenId.value)
 }
+```
+
+When a write settles before an indexer or RPC read reflects the new state, poll deliberately instead of spinning in the component:
+
+```ts
+await queryClient.waitForChange(
+  tokenTransfersQuery,
+  [collection.value, tokenId.value] as [string, bigint],
+  (current, previous) => current.length > (previous?.length ?? 0),
+  { interval: 3_000, maxAttempts: 10 },
+)
 ```
 
 ### Source Type Discipline
