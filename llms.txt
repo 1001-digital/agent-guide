@@ -1,0 +1,18 @@
+# 1001 Dapp Lego Blocks
+
+> Agent entrypoint for choosing and using 1001 dapp building blocks.
+
+This file routes agents to the right 1001 block for each dapp-building task.
+Detailed implementation guidance lives in `blocks/*.md`.
+
+## Guides
+
+- [Layers](blocks/layers.md): Nuxt/Vue app foundation, EVM UX, components, styles.
+- [Data](blocks/data.md): resilient on-chain data queries.
+- [Metadata](blocks/metadata.md): decentralized resource fetching and NFT metadata normalization.
+- [Indexing](blocks/indexing.md): browser/server event indexing and Ponder caches.
+- [Contracts](blocks/contracts.md): NFT extensions and Solidity helpers.
+- [Contract Intelligence](blocks/contract-intelligence.md): proxy detection and NatSpec.
+- [Wallet Auth](blocks/wallet-auth.md): in-app wallets and SIWE sessions.
+- [Infra](blocks/infra.md): deployable IPFS infrastructure.
+
