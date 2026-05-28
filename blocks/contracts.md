@@ -252,7 +252,7 @@ contract Token is ERC721, WithContractMetaData {
 IPFS metadata:
 
 ```solidity
-contract CleanToken is ERC721, WithIPFSMetaData {
+contract CleanToken is WithIPFSMetaData {
   constructor()
     ERC721("CleanToken", "CLEAN")
     WithIPFSMetaData("Qm0123456789...")
@@ -434,6 +434,7 @@ Avoid use cases:
 - Multi-mint functions must use `ensureAvailabilityFor(amount)`, not just `ensureAvailability`.
 - Random assignment is not secure randomness.
 - OpenZeppelin 5 `_update` overrides must include all relevant parents.
+- `WithIPFSMetaData` already inherits `ERC721`; inherit `WithIPFSMetaData` directly and still call the inherited `ERC721` constructor.
 - `supportsInterface` must include all parents that add interfaces, especially royalties.
 - `WithMarketOffers` offers can remain active until cancelled or token movement; approval revocation alone may not clear internal offers.
 - Publishing full metadata before sale can expose rarity distributions.
