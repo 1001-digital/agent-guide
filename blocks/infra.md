@@ -64,6 +64,12 @@ ADMIN_PASSWORD_HASH=
 caddy hash-password --plaintext 'your-password'
 ```
 
+Paste the generated bcrypt hash into `.env.production` with single quotes so shell sourcing does not expand the `$` separators:
+
+```txt
+ADMIN_PASSWORD_HASH='$2a$14$exampleHashFromCaddy'
+```
+
 4. Run setup:
 
 ```sh
