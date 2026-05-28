@@ -102,7 +102,7 @@ Detection order is intentional. First match wins.
 | EIP-1967 beacon | Beacon slot, then `implementation()` on beacon. |
 | EIP-1822 | PROXIABLE storage slot. |
 | EIP-1167 | Minimal proxy bytecode. |
-| Safe proxy | Storage slot 0. |
+| Safe proxy | Slot 0 singleton plus Safe proxy bytecode and `masterCopy()` checks. |
 | EIP-897 | `implementation()` call as last resort. |
 
 Tradeoffs:
@@ -163,9 +163,11 @@ if (raw) {
     }
   }))
 
-  const compositeAbi = buildCompositeAbi(
-    targets.map((target) => target.abi).filter(Boolean),
-  )
+  const abiLayers = targets
+    .map((target) => target.abi)
+    .filter((abi): abi is unknown[] => Boolean(abi))
+
+  const compositeAbi = buildCompositeAbi(abiLayers)
 }
 ```
 
@@ -192,6 +194,8 @@ Use primitives when:
 - You need selector math for an ABI.
 - You need to filter an ABI by diamond selectors.
 - You need to compose ABIs without running detection.
+
+Low-level detector exports such as `detectProxy`, `detectEip1967`, and `detectDiamond` take a fetch function argument: `(rpc, address, fetchFn)`. Prefer `createProxies().detect(rpc, address)` unless the app intentionally manages the fetch implementation itself.
 
 Selector example:
 
