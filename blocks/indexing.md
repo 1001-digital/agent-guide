@@ -43,13 +43,13 @@ pnpm add better-sqlite3
 Ponder artifact cache:
 
 ```sh
-pnpm add @1001-digital/ponder-artifacts drizzle-orm hono viem
+pnpm add @1001-digital/ponder-artifacts drizzle-orm hono viem pg @electric-sql/pglite
 ```
 
 Ponder ENS cache:
 
 ```sh
-pnpm add @1001-digital/ponder-ens drizzle-orm hono viem
+pnpm add @1001-digital/ponder-ens drizzle-orm hono viem pg @electric-sql/pglite
 ```
 
 ## Minimal Setup
@@ -79,11 +79,11 @@ const indexer = createIndexer({
       address: '0x0000000000000000000000000000000000000000',
       startBlock: 18_000_000n,
       events: {
-        Transfer({ event, store }) {
-          store.set('owners', `${event.args.tokenId}`, {
+        async Transfer({ event, store }) {
+          await store.set('owners', `${event.args.tokenId}`, {
             tokenId: event.args.tokenId,
             owner: event.args.to,
-            block: event.blockNumber,
+            block: event.block,
           })
         },
       },
@@ -244,12 +244,12 @@ const contracts = {
     address: '0x0000000000000000000000000000000000000000',
     startBlock: 18_000_000n,
     events: {
-      Transfer({ event, store }) {
-        store.set('transfers', `${event.blockNumber}:${event.logIndex}`, {
+      async Transfer({ event, store }) {
+        await store.set('transfers', `${event.block}:${event.logIndex}`, {
           from: event.args.from,
           to: event.args.to,
           tokenId: event.args.tokenId,
-          block: event.blockNumber,
+          block: event.block,
         })
       },
     },
@@ -366,8 +366,8 @@ Mounted routes:
 
 | Method | Path | Behavior |
 | --- | --- | --- |
-| `GET` | `/ens/profiles/:id` | Returns cached profile and refreshes if stale. |
-| `POST` | `/ens/profiles/:id` | Force-refresh profile. |
+| `GET` | `/ens/:id` | Returns cached profile and refreshes if stale. |
+| `POST` | `/ens/:id` | Force-refresh profile. |
 
 The `:id` can be an Ethereum address or ENS name.
 
@@ -444,16 +444,29 @@ const indexer = createIndexer({
       address,
       startBlock,
       events: {
-        TransferSingle({ event, store }) {
-          const tokenId = event.args.id
-          const owner = event.args.to.toLowerCase()
-          const key = `${owner}:${tokenId}`
+        async TransferSingle({ event, store }) {
+          const tokenId = event.args.id as bigint
+          const value = event.args.value as bigint
 
-          store.update('balances', key, {
-            owner,
-            tokenId,
-            balance: event.args.value,
-          })
+          async function addBalance(ownerRaw: unknown, delta: bigint) {
+            const owner = String(ownerRaw).toLowerCase()
+            if (owner === '0x0000000000000000000000000000000000000000') return
+
+            const key = `${owner}:${tokenId}`
+            const existing = await store.get('balances', key)
+            const balance =
+              ((existing?.balance as bigint | undefined) ?? 0n) + delta
+
+            if (balance <= 0n) {
+              await store.delete('balances', key)
+              return
+            }
+
+            await store.set('balances', key, { owner, tokenId, balance })
+          }
+
+          await addBalance(event.args.from, -value)
+          await addBalance(event.args.to, value)
         },
       },
     },
@@ -485,7 +498,7 @@ Use the returned image/animation fields directly for UI, or pass full metadata t
 ### ENS Profile Fetch
 
 ```ts
-const profile = await $fetch(`/ens/profiles/${address}`)
+const profile = await $fetch(`/ens/${address}`)
 ```
 
 Use this for UI profile cards and owner/minter tables instead of making the browser resolve ENS repeatedly.
