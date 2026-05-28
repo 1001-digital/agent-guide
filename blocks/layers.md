@@ -530,7 +530,7 @@ The base layer mounts global toasts and confirm dialogs automatically. Do not ma
 - Pair transaction flows with `dapp-query` invalidation after writes.
 - Pair wallet connection UI with `adonis-siwe` when using AdonisJS, but use Adonis' full-message signing flow rather than the layer's nonce-based SIWE components.
 - Pair `EvmAddressInput` and `EvmAccount` with `ponder-ens` when an indexer provides cached ENS profiles.
-- Pair `useResolvedUrl`, `useDwebClient`, or configured gateways with `ipfs.server` when the app owns its gateway.
+- Pair `useResolvedUrl`, `useDwebClient`, or configured gateways with `1001-digital/ipfs.server` when the app owns its gateway.
 - Pair `proxies` and `natspec` with `EvmArtifactModel` or contract-detail pages that need implementation ABI/docs.
 
 ## Practical Implementation Patterns

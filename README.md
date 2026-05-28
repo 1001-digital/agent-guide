@@ -33,7 +33,7 @@ For a new Nuxt/Vue EVM dapp, start here:
 | NatSpec from verified contracts | `@1001-digital/natspec` | [Contract intelligence guide](blocks/contract-intelligence.md) |
 | In-app wagmi wallet | `@1001-digital/wagmi-in-app-wallet` | [Wallet/auth guide](blocks/wallet-auth.md) |
 | AdonisJS SIWE sessions | `@1001-digital/adonis-siwe` | [Wallet/auth guide](blocks/wallet-auth.md) |
-| Own IPFS node/gateway/admin API | `ipfs.server` | [Infra guide](blocks/infra.md) |
+| Own IPFS node/gateway/admin API | `1001-digital/ipfs.server` | [Infra guide](blocks/infra.md) |
 
 ## Agent Rules
 

@@ -13,7 +13,7 @@ Use this guide when an agent needs deployable IPFS infrastructure for a dapp pro
 
 ## When Not To Use It
 
-- Do not add `ipfs.server` as a frontend dependency.
+- Do not add `1001-digital/ipfs.server` as a frontend dependency.
 - Do not deploy an IPFS node when public gateways or a pinning provider are enough.
 - Do not expose the Kubo admin API publicly without authentication.
 - Do not set a public gateway to fetch arbitrary network content unless the product intentionally needs that behavior.
@@ -22,7 +22,7 @@ Use this guide when an agent needs deployable IPFS infrastructure for a dapp pro
 ## Packages/Repos Involved
 
 - Source repo: <https://github.com/1001-digital/ipfs.server>
-- `ipfs.server`: Docker/Kamal deployment for Kubo plus Caddy.
+- `1001-digital/ipfs.server`: Docker/Kamal deployment for Kubo plus Caddy.
 - Kubo: IPFS daemon for pinning, gateway, IPNS, and RPC API.
 - Caddy: reverse proxy for admin API auth and large uploads.
 - Kamal: deployment tool.

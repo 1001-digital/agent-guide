@@ -71,6 +71,6 @@ Default stack for a new Nuxt/Vue EVM dapp:
 ## Run IPFS Infrastructure
 
 - [Detailed guide: Infra](blocks/infra.md)
-- Source: [ipfs.server](https://github.com/1001-digital/ipfs.server)
+- Source: [1001-digital/ipfs.server](https://github.com/1001-digital/ipfs.server)
 - Use for: deployable Kubo IPFS node infrastructure with a public pinned-content gateway and authenticated admin API.
 - Key rule: this is infrastructure, not an app dependency. Use it when the project needs its own pinning/gateway/IPNS operations.
