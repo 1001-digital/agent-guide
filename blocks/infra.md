@@ -276,7 +276,7 @@ Set it to `false` only when:
 - Treat `.env.production` as secret-bearing deployment config.
 - Use DNS records for `IPFS_HOST` and `IPFS_ADMIN_HOST` before deploying.
 - Keep admin and public domains separate.
-- Make sure the server exposes ports 4001, 8080, and 5080 as required by the deployment.
+- Make sure the server exposes ports `80`/`443` for Kamal proxy TLS and `4001` TCP/UDP for IPFS swarm traffic. Do not publicly expose the internal gateway/admin container ports `8080` or `5080`.
 - Configure memory and storage according to expected pin volume.
 - If using a host path for `IPFS_VOLUME`, ensure permissions and backups are handled.
 - For CI/CD, use secret storage for registry and admin credentials.
