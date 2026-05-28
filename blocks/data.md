@@ -136,6 +136,8 @@ Rules:
 
 ### Source Types
 
+`dapp-query` source callbacks are typed as `(...args: unknown[])` in the published package. In strict TypeScript, keep callback parameters broad and cast the argument tuple inside the callback. Do not narrow the callback signature itself.
+
 #### GraphQL Source
 
 Use for Ponder, The Graph, or any GraphQL indexer.
@@ -153,10 +155,13 @@ const indexedTransfers = graphqlSource({
       items { from to tokenId block transactionHash }
     }
   }`,
-  variables: (collection: string, tokenId: bigint) => ({
-    collection: collection.toLowerCase(),
-    tokenId: tokenId.toString(),
-  }),
+  variables: (...args: unknown[]) => {
+    const [collection, tokenId] = args as [string, bigint]
+    return {
+      collection: collection.toLowerCase(),
+      tokenId: tokenId.toString(),
+    }
+  },
   transform: (data: any) => data.transfers.items.map((row: any) => ({
     from: row.from,
     to: row.to,
@@ -191,7 +196,10 @@ const rpcTransfers = rpcSource({
   address: '0x0000000000000000000000000000000000000000',
   fromBlock: 18_000_000n,
   maxBlockRange: 2_000,
-  filter: (_collection: string, tokenId: bigint) => ({ tokenId }),
+  filter: (...args: unknown[]) => {
+    const [, tokenId] = args as [string, bigint]
+    return { tokenId }
+  },
   transform: (logs: any[]) => logs.map((log) => ({
     from: log.args.from,
     to: log.args.to,
@@ -213,9 +221,10 @@ import { httpSource } from '@1001-digital/dapp-query-core'
 
 const httpTransfers = httpSource({
   url: 'https://api.example.com/transfers',
-  request: (address: string) => ({
-    params: { address },
-  }),
+  request: (...args: unknown[]) => {
+    const [address] = args as [string]
+    return { params: { address } }
+  },
   transform: (data: any[]) => data.map(parseTransfer),
   sseUrl: 'https://api.example.com/transfers/stream',
 })
@@ -230,7 +239,8 @@ import { customSource } from '@1001-digital/dapp-query-core'
 
 const localSource = customSource({
   id: 'local-owner-cache',
-  fetch: async (collection: string, tokenId: bigint) => {
+  fetch: async (...args: unknown[]) => {
+    const [collection, tokenId] = args as [string, bigint]
     const res = await fetch(`/api/owner/${collection}/${tokenId}`)
     if (!res.ok) throw new Error('Local owner cache failed')
     return res.json()

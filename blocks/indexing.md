@@ -486,7 +486,8 @@ import { customSource } from '@1001-digital/dapp-query-core'
 
 const localOwners = customSource({
   id: 'local-owners',
-  fetch: async (collection: string, tokenId: bigint) => {
+  fetch: async (...args: unknown[]) => {
+    const [collection, tokenId] = args as [string, bigint]
     return indexer.store.get('owners', `${collection}:${tokenId}`)
   },
 })
