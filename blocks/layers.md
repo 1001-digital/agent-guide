@@ -43,13 +43,15 @@ Dependency direction:
 For a Nuxt EVM dapp:
 
 ```sh
-pnpm add @1001-digital/layers.evm
+pnpm add @1001-digital/layers.evm @wagmi/vue @wagmi/core viem
 ```
 
-If the package manager or workspace setup does not expose transitive layer packages cleanly, add the public packages directly:
+Install wagmi and viem as direct app dependencies because the guide's read/write examples import from them and pnpm does not expose transitive dependencies to app source.
+
+If the package manager or workspace setup does not expose transitive layer packages cleanly, add the public 1001 packages directly too:
 
 ```sh
-pnpm add @1001-digital/layers.evm @1001-digital/components @1001-digital/components.evm @1001-digital/styles
+pnpm add @1001-digital/layers.evm @1001-digital/components @1001-digital/components.evm @1001-digital/styles @wagmi/vue @wagmi/core viem
 ```
 
 For a Nuxt app that only needs base UI:
