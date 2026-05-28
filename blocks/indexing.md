@@ -31,8 +31,13 @@ Use this guide when an agent needs chain-event indexing, local derived state, or
 Lightweight indexer:
 
 ```sh
-pnpm add @1001-digital/simple-indexer viem
+git clone https://github.com/1001-digital/simple-indexer ../simple-indexer
+pnpm --dir ../simple-indexer install
+pnpm --dir ../simple-indexer build
+pnpm add ../simple-indexer viem
 ```
+
+Use the local built checkout until `@1001-digital/simple-indexer` is available from the package registry used by the app.
 
 SQLite server store:
 
