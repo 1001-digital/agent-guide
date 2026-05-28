@@ -418,6 +418,7 @@ export default defineNuxtConfig({
 - RPC backfills over wide block ranges can be slow. Set `fromBlock` narrowly and keep `maxBlockRange` provider-safe.
 - `race` can double or triple request volume. Use it intentionally.
 - IndexedDB is unavailable during SSR. Use client plugins or memory cache on the server.
+- If strict `node16`/`nodenext` TypeScript config with `skipLibCheck: false` reports `TS2834` from `@1001-digital/dapp-query-vue/dist/*.d.ts`, use Nuxt/Vite-style `moduleResolution: "bundler"` or enable `skipLibCheck`. Do not work around it with deep `dist` imports.
 - Stale data is not an error. Show `revalidating` separately from `pending`.
 - A failing primary source can be skipped temporarily. Do not assume source order means the first source always runs.
 
