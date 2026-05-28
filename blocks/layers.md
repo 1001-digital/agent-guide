@@ -121,10 +121,6 @@ export default defineAppConfig({
     inAppWallet: {
       enabled: false,
     },
-    safe: {
-      description: 'My dapp in Safe',
-      iconPath: '/icon.png',
-    },
   },
 })
 ```
@@ -167,7 +163,7 @@ Do not manually wrap every EVM component in `<ClientOnly>` unless the consuming 
 | Data | Installs wagmi Vue integration and TanStack Query through the layer plugin. |
 | Config | Merges `app.config.ts` behavior with `runtimeConfig.public.evm` endpoint values. |
 | Utilities | Exposes EVM composables and utilities for Nuxt auto-imports. |
-| Safe | Serves a Safe app manifest at `/manifest.json`. |
+| Safe | Provides Safe connector support through wagmi. |
 | Styles | Loads shared reset, base CSS, component variables, and utility classes. |
 
 ### Wallet Connection Components
@@ -801,6 +797,7 @@ pnpm why eventemitter3
 - WalletConnect without project ID: WalletConnect connectors need `walletConnectProjectId`.
 - Server-only imports in client components: keep server calls behind API routes or Nitro endpoints.
 - In-app wallet UX without consent: only enable in-app wallet flows when the product explicitly explains local key custody.
+- Safe App metadata: do not assume the installed `@1001-digital/layers.evm` package serves `/manifest.json`. The published package may omit the server route even when the source repo has one; add an app-local route or confirm the installed version ships it before relying on Safe App browser metadata.
 - Scoped CSS variables: scoped styles may not affect global overlays, toasts, or dialogs.
 - Manual `Toasts` rendering: unnecessary in Nuxt layer apps; the global plugin mounts them.
 - Direct component imports outside Nuxt: you must configure Vue, wagmi, viem, styles, and client-only behavior yourself.
