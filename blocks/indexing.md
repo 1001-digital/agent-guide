@@ -5,7 +5,7 @@ Use this guide when an agent needs chain-event indexing, local derived state, or
 ## What To Use This For
 
 - Lightweight EVM event indexes in a browser or server process.
-- Derived state such as owners, balances, transfers, mints, votes, observations, and activity feeds.
+- Derived state such as owners, balances, transfers, mints, votes, annotations, and activity feeds.
 - Local replay after handler changes without re-fetching all logs.
 - Reorg-aware event handling without running a full indexer stack.
 - Ponder apps that need persistent offchain NFT metadata or ENS profile caches.

@@ -153,7 +153,7 @@ NUXT_SSR=false
 
 Do not manually wrap every EVM component in `<ClientOnly>` unless the consuming page has its own SSR issue. The layer already marks wallet-dependent components client-only.
 
-## Core APIs/Components/Config
+## Core APIs/Components/Contracts/Config
 
 ### What The EVM Layer Adds
 

@@ -217,7 +217,7 @@ Client methods:
 | --- | --- |
 | `fetch(chainId, address)` | Fetch userdoc/devdoc from Sourcify and normalize. |
 | `parse(userdoc, devdoc)` | Pure parse of compiler docs. |
-| `toMetadata(natspec)` | Convert normalized docs to contract-metadata-compatible shape. |
+| `toMetadata(natspec)` | Convert normalized docs to a portable metadata shape. |
 
 Direct exports:
 

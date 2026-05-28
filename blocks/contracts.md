@@ -365,53 +365,34 @@ Important caveat:
 
 ## Practical Implementation Patterns
 
-### Mint With Limited Supply And Price
+### Mint With Limited Supply
 
 ```solidity
-contract MintableToken is ERC721, WithLimitedSupply, WithTokenPrices, WithWithdrawals {
+contract MintableToken is ERC721, WithLimitedSupply, WithWithdrawals {
+  uint256 public constant PRICE = 0.05 ether;
+
   constructor()
     ERC721("MintableToken", "MINT")
     Ownable(msg.sender)
     WithLimitedSupply(1000)
-    WithTokenPrices(0.05 ether)
   {}
 
-  function mint() external payable ensureAvailability meetsPrice(nextToken()) {
-    _safeMint(msg.sender, nextToken());
+  function mint() external payable ensureAvailability {
+    require(msg.value == PRICE, "Wrong payment");
+
+    uint256 tokenId = nextToken();
+    _safeMint(msg.sender, tokenId);
   }
 }
 ```
 
 When combining extensions, check whether multiple parents implement the same hook. If they do, write an explicit override that calls the intended extension implementation.
 
-### One-Per-Wallet Soulbound Token
+### Combining `_update` Extensions
 
-```solidity
-contract Pass is ERC721, OnePerWallet, Soulbound {
-  uint256 private _tokenId;
+When two extensions both use `_update`, write the combined override only after checking both parent implementations in the installed package. The safe default for agents is to keep the first version of a contract simple, then add one hook-based extension at a time with tests.
 
-  constructor()
-    ERC721("Pass", "PASS")
-  {}
-
-  function mint() external {
-    _tokenId++;
-    _safeMint(msg.sender, _tokenId);
-  }
-
-  function _update(address to, uint256 tokenId, address auth)
-    internal
-    override(ERC721, OnePerWallet, Soulbound)
-    returns (address)
-  {
-    address from = OnePerWallet._update(to, tokenId, auth);
-    if (from != address(0) && to != address(0)) revert NonTransferable();
-    return from;
-  }
-}
-```
-
-Agents must verify exact inherited behavior against the installed package before finalizing complex multi-extension overrides. Hook composition is the highest-risk part of this block.
+Agents must verify exact inherited behavior before finalizing complex multi-extension overrides. Hook composition is the highest-risk part of this block.
 
 ### Metadata Lifecycle
 
