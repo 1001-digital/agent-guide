@@ -82,6 +82,9 @@ export default defineNuxtConfig({
           mainnet: {
             rpcs: '',
           },
+          sepolia: {
+            rpcs: '',
+          },
         },
         ens: {
           indexers: '',
@@ -280,7 +283,10 @@ Basic write pattern:
   <EvmTransactionFlowDialog
     chain="sepolia"
     :request="mint"
-    :text="{ title: 'Mint token', action: 'Mint' }"
+    :text="{
+      title: { confirm: 'Mint token' },
+      action: { confirm: 'Mint', error: 'Try again' },
+    }"
     @complete="onComplete"
     @cancel="onCancel"
   >
