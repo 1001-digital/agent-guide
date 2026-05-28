@@ -77,6 +77,8 @@ inAppWallet({
 })
 ```
 
+Current API caveat: `prepareInAppWallet(mnemonic)` writes to the default storage key, `evm:in-app-wallet-pk`. If you pass a custom `storageKey` to `inAppWallet`, seed that key yourself or keep the default connector key so `connect()` can find the prepared private key.
+
 ### Adonis SIWE
 
 After install:
@@ -238,12 +240,12 @@ export default class ProtectedController {
 }
 ```
 
-Use `requireSession` for routes that must have a verified wallet session. Use non-throwing session reads for optional personalization if available in the package API.
+Use `requireSession` for routes that must have a verified wallet session. Use `siwe.getSession(ctx)` for optional personalization.
 
 ## Common Pairings With Other 1001 Blocks
 
 - Pair `wagmi-in-app-wallet` with `layers.evm` when the UI should expose in-app wallet setup.
-- Pair `adonis-siwe` with `EvmSiweDialog`, `EvmConnectAuth`, or `EvmConnectAuthDialog`.
+- Pair `adonis-siwe` with `layers.evm` wallet connection UI. Use the custom Adonis message/sign/verify flow below; the layer SIWE components expect a nonce endpoint, while `adonis-siwe` returns a complete SIWE message.
 - Pair SIWE session addresses with `ponder-ens` for profile display.
 - Pair authenticated writes with `EvmTransactionFlowDialog`.
 - Pair backend-protected NFT actions with `erc721-extensions` contracts and wallet sessions.
@@ -255,12 +257,16 @@ Use `requireSession` for routes that must have a verified wallet session. Use no
 Do not sign on connect. Sign only when the user starts an action that needs server-trusted wallet ownership.
 
 ```ts
+import { signMessage } from '@wagmi/core'
+
+const wagmiConfig = useConfig()
+
 const { message } = await api.post('/auth/siwe/message', {
   address,
   chainId: 1,
 })
 
-const signature = await signMessage({ message })
+const signature = await signMessage(wagmiConfig, { message })
 
 await api.post('/auth/siwe/verify', {
   message,
@@ -270,22 +276,30 @@ await api.post('/auth/siwe/verify', {
 
 After verification, protected API routes can call `siwe.requireSession(ctx)`.
 
-### Layers Client With Adonis Backend
+### Layers Wallet With Adonis Backend
 
 ```vue
 <template>
-  <EvmConnectAuthDialog
-    :get-nonce="getMessage"
-    :verify="verify"
-    statement="Sign in to manage your collection."
-    @authenticated="refreshSession"
-  />
+  <EvmConnectDialog />
+
+  <Button
+    class="primary"
+    :disabled="!account.address.value"
+    @click="signIn"
+  >
+    Sign in to manage
+  </Button>
 </template>
 
 <script setup lang="ts">
-const account = useAccount()
+import { signMessage } from '@wagmi/core'
 
-async function getMessage() {
+const account = useAccount()
+const wagmiConfig = useConfig()
+
+async function signIn() {
+  if (!account.address.value || !account.chainId.value) return
+
   const response = await $fetch<{ message: string }>('/auth/siwe/message', {
     method: 'POST',
     body: {
@@ -294,19 +308,18 @@ async function getMessage() {
     },
   })
 
-  return response.message
-}
-
-async function verify(message: string, signature: string) {
-  await $fetch('/auth/siwe/verify', {
-    method: 'POST',
-    body: { message, signature },
+  const signature = await signMessage(wagmiConfig, {
+    message: response.message,
   })
 
-  return true
-}
+  await $fetch('/auth/siwe/verify', {
+    method: 'POST',
+    body: {
+      message: response.message,
+      signature,
+    },
+  })
 
-async function refreshSession() {
   await refreshNuxtData('session')
 }
 </script>
@@ -403,13 +416,14 @@ When the frontend and Adonis backend are on different origins:
 ## Agent Checklist
 
 - Decide whether the app needs wallet connection only or server-trusted auth.
-- Use `layers.evm` components for normal wallet/SIWE UI.
+- Use `layers.evm` for normal wallet UI; use layer SIWE components only with nonce-based backends.
 - Enable in-app wallet only when local browser custody is acceptable.
 - Explain local key storage clearly in product UI.
-- Use `prepareInAppWallet` before connecting the in-app wallet connector.
+- Use `prepareInAppWallet` before connecting the in-app wallet connector, and keep the default storage key unless you intentionally seed a custom key.
 - Configure Adonis SIWE with domain, URI, statement, allowed chain IDs, and RPC URLs.
 - Keep private RPC URLs server-side.
 - Use lazy SIWE: ask for a signature only when a trusted backend action requires it.
+- For `adonis-siwe`, sign the complete message returned by `/auth/siwe/message`; do not pass that message into nonce-based layer SIWE components.
 - Use hooks to link wallets to users or return app-specific data.
 - Read sessions in protected controllers with `siwe.requireSession(ctx)`.
 - Test EOA, contract wallet if supported, wrong chain, expired session, logout, and domain mismatch.

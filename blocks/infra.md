@@ -224,13 +224,15 @@ export default defineAppConfig({
 In metadata fetcher:
 
 ```ts
-const dwebFetch = createDwebFetch({
+const dweb = createDwebFetch({
   ipfs: {
     mode: 'gateway',
-    gateways: ['https://ipfs.example.com/ipfs/'],
+    gateways: ['https://ipfs.example.com'],
   },
 })
 ```
+
+`layers.evm` app config uses the path gateway form (`https://ipfs.example.com/ipfs/`). Direct `dweb-fetch` config uses the gateway origin/root (`https://ipfs.example.com`) because the client appends `/ipfs/<cid>` or `/ipns/<name>` internally.
 
 Keep stored metadata as `ipfs://<cid>/...`; only resolve to the gateway at fetch/render time.
 

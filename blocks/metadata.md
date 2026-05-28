@@ -45,16 +45,16 @@ Default client:
 ```ts
 import { createDwebFetch } from '@1001-digital/dweb-fetch'
 
-export const dwebFetch = createDwebFetch()
+export const dweb = createDwebFetch()
 ```
 
 Server-heavy gateway-only IPFS mode:
 
 ```ts
-export const dwebFetch = createDwebFetch({
+export const dweb = createDwebFetch({
   ipfs: {
     mode: 'gateway',
-    gateways: ['https://ipfs.io/ipfs/'],
+    gateways: ['https://ipfs.io'],
   },
   arweave: {
     gateways: ['https://arweave.net'],
@@ -66,7 +66,7 @@ export const dwebFetch = createDwebFetch({
 EIP-155 NFT reference support:
 
 ```ts
-export const dwebFetch = createDwebFetch({
+export const dweb = createDwebFetch({
   eip155: {
     rpcUrls: {
       1: 'https://eth.llamarpc.com',
@@ -83,13 +83,13 @@ import { normalizeUri } from '@1001-digital/normalize-dweb-url'
 import { createDwebFetch } from '@1001-digital/dweb-fetch'
 import { resolveTokenMetadata } from '@1001-digital/resolve-metadata'
 
-const dwebFetch = createDwebFetch({
+const dweb = createDwebFetch({
   ipfs: { mode: 'gateway' },
 })
 
 export async function loadTokenMetadata(tokenUri: string) {
   const canonicalUri = normalizeUri(tokenUri)
-  const response = await dwebFetch(canonicalUri)
+  const response = await dweb.fetch(canonicalUri)
   const raw = await response.json()
 
   return resolveTokenMetadata(raw)
@@ -137,14 +137,14 @@ Normalization handles:
 
 ### `dweb-fetch`
 
-Create a fetch function that routes by URL scheme.
+Create a dweb client that routes by URL scheme.
 
 ```ts
 import { createDwebFetch } from '@1001-digital/dweb-fetch'
 
-const dwebFetch = createDwebFetch({
+const dweb = createDwebFetch({
   ipfs: {
-    gateways: ['https://ipfs.io/ipfs/'],
+    gateways: ['https://ipfs.io'],
     mode: 'verified',
   },
   arweave: {
@@ -160,14 +160,23 @@ const dwebFetch = createDwebFetch({
 })
 ```
 
+Use gateway origins such as `https://ipfs.io` in `dweb-fetch` config. The client appends `/ipfs/<cid>` or `/ipns/<name>` internally; do not pass a path gateway such as `https://ipfs.io/ipfs/` here.
+
 Supported fetch inputs:
 
 ```ts
-await dwebFetch('ipfs://bafy...')
-await dwebFetch('ipns://example.eth')
-await dwebFetch('ar://txId')
-await dwebFetch('https://example.com/metadata.json')
-await dwebFetch('eip155:1/erc721:0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D/1234')
+await dweb.fetch('ipfs://bafy...')
+await dweb.fetch('ipns://example.eth')
+await dweb.fetch('ar://txId')
+await dweb.fetch('https://example.com/metadata.json')
+await dweb.fetch('eip155:1/erc721:0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D/1234')
+```
+
+Resolve a renderable HTTP URL without fetching the bytes:
+
+```ts
+const imageUrl = await dweb.resolveUrl('ipfs://bafy.../image.png')
+await dweb.destroy()
 ```
 
 Protocol behavior:
@@ -282,13 +291,13 @@ import { normalizeUri } from '@1001-digital/normalize-dweb-url'
 import { createDwebFetch } from '@1001-digital/dweb-fetch'
 import { resolveTokenMetadata } from '@1001-digital/resolve-metadata'
 
-const dwebFetch = createDwebFetch({
+const dweb = createDwebFetch({
   ipfs: { mode: 'gateway' },
 })
 
 export async function resolveArtifact(tokenUri: string) {
   const uri = normalizeUri(tokenUri)
-  const response = await dwebFetch(uri)
+  const response = await dweb.fetch(uri)
 
   if (!response.ok) {
     throw new Error(`metadata fetch failed: ${response.status}`)
@@ -315,7 +324,7 @@ export async function resolveArtifact(tokenUri: string) {
 import { resolveContractMetadata } from '@1001-digital/resolve-metadata'
 
 export async function resolveCollection(contractUri: string) {
-  const response = await dwebFetch(normalizeUri(contractUri))
+  const response = await dweb.fetch(normalizeUri(contractUri))
   const metadata = resolveContractMetadata(await response.json())
 
   return {
@@ -336,7 +345,7 @@ Use `eip155:` when you want a single portable reference to an NFT token rather t
 const uri =
   'eip155:1/erc721:0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D/1234'
 
-const metadata = resolveTokenMetadata(await dwebFetch(uri).then((res) => res.json()))
+const metadata = resolveTokenMetadata(await dweb.fetch(uri).then((res) => res.json()))
 ```
 
 Configure RPC URLs for every chain ID you will resolve:
@@ -367,10 +376,10 @@ Do not use gateway URLs as cache keys. The same CID can appear through many gate
 Use gateway mode for predictable server resource usage:
 
 ```ts
-const fetchMetadata = createDwebFetch({
+const metadataClient = createDwebFetch({
   ipfs: {
     mode: 'gateway',
-    gateways: ['https://ipfs.io/ipfs/', 'https://cloudflare-ipfs.com/ipfs/'],
+    gateways: ['https://ipfs.io', 'https://cloudflare-ipfs.com'],
   },
   arweave: {
     gateways: ['https://arweave.net'],
@@ -385,7 +394,7 @@ Gateway mode is a trust/performance tradeoff: it avoids running verified IPFS re
 
 - Keep gateway and RPC endpoints in runtime config or server environment variables.
 - Do not expose private RPC keys in public Nuxt runtime config. Use public RPCs client-side or proxy through server routes.
-- In Nuxt apps, build `dwebFetch` in a plugin or composable. Use separate server/client configs if server has private endpoints.
+- In Nuxt apps, build the `dweb` client in a plugin or composable. Use separate server/client configs if server has private endpoints.
 - In browser apps, avoid fetching many large media files through JavaScript when a normalized media URI can be handed to an `<img>`, `<video>`, or `EvmArtifact`.
 - If using `ipfs.server`, configure app gateways to point at the project-owned gateway for pinned content.
 

@@ -202,8 +202,8 @@ Default connection pattern:
 </template>
 
 <script setup lang="ts">
-function onConnected(address: string) {
-  console.log('connected', address)
+function onConnected(payload: { address: string | undefined }) {
+  console.log('connected', payload.address)
 }
 
 function onDisconnected() {
@@ -323,7 +323,7 @@ Transaction flow responsibilities:
 
 ### SIWE And Auth UI
 
-Use SIWE components when the frontend must prove wallet ownership to a backend.
+Use SIWE components when the frontend must prove wallet ownership to a backend that exposes nonce and verification endpoints compatible with the layer flow.
 
 | Component | Purpose | Backend responsibility |
 | --- | --- | --- |
@@ -346,16 +346,10 @@ Client pattern:
 </template>
 
 <script setup lang="ts">
-const getNonce = () => $fetch<string>('/auth/siwe/message', {
-  method: 'POST',
-  body: {
-    address: '0x...',
-    chainId: 1,
-  },
-})
+const getNonce = () => $fetch<string>('/api/siwe/nonce')
 
 const verify = (message: string, signature: string) =>
-  $fetch<boolean>('/auth/siwe/verify', {
+  $fetch<boolean>('/api/siwe/verify', {
     method: 'POST',
     body: { message, signature },
   })
@@ -370,7 +364,7 @@ function onError(error: unknown) {
 </script>
 ```
 
-Pair SIWE UI with `@1001-digital/adonis-siwe` when the backend is AdonisJS.
+These layer components create the SIWE message in the browser after `getNonce()` returns a nonce string. A backend that returns a complete SIWE message, such as the default `@1001-digital/adonis-siwe` route flow, needs a custom frontend signing flow instead of these nonce-based components.
 
 ### Artifact Component
 
@@ -465,19 +459,20 @@ Layer composables and helpers agents should look for:
 | API | Use |
 | --- | --- |
 | `useChainConfig(chainKey)` | Read configured chain ID/block explorer by app chain key. |
-| `useMainChainId(chainKey)` | Resolve the primary chain ID. |
+| `useMainChainId()` | Resolve the configured default chain ID. |
 | `useBlockExplorer(chainKey)` | Build explorer links. |
 | `useEnsureChainIdCheck(chainKey)` | Check/switch to the expected chain before writes. |
 | `useEns(addressOrName)` | Resolve ENS profile data. |
 | `useGasPrice()` | Display current gas price. |
-| `usePriceFeed()` | Convert wei/ETH values to USD when configured. |
+| `usePriceFeed()` | Fetch cached Chainlink ETH/USD data on mainnet and convert wei to USD. |
 | `useSiwe()` | Client-side SIWE session state/actions. |
 | `useToast()` | Global toast state and actions. |
 | `useConfirm()` | Global confirm dialog. |
 | `shortAddress(address, chars?)` | Shorten addresses for UI. |
-| `formatETH(value, decimals?)` | Format wei/ETH values. |
-| `resolveChain(idOrKey)` | Resolve viem chain objects. |
-| `resolveUri(uri)` | Resolve configured IPFS/Arweave gateway URLs. |
+| `formatETH(value, decimals?)` | Format ETH-denominated string/number values for display. |
+| `resolveChain(id)` | Resolve viem chain objects by numeric chain ID. |
+| `useDwebClient()` | Create a configured dweb client for fetch/URL resolution. |
+| `useResolvedUrl(uri)` | Resolve IPFS/Arweave/data/blob/HTTP URLs for rendering. |
 
 Toast pattern:
 
@@ -523,9 +518,9 @@ The base layer mounts global toasts and confirm dialogs automatically. Do not ma
 
 - Pair `EvmArtifact` with `dweb-fetch` and `resolve-metadata` for NFT display.
 - Pair transaction flows with `dapp-query` invalidation after writes.
-- Pair `EvmConnectAuthDialog` with `adonis-siwe` when using AdonisJS.
+- Pair wallet connection UI with `adonis-siwe` when using AdonisJS, but use Adonis' full-message signing flow rather than the layer's nonce-based SIWE components.
 - Pair `EvmAddressInput` and `EvmAccount` with `ponder-ens` when an indexer provides cached ENS profiles.
-- Pair `resolveUri` or configured gateways with `ipfs.server` when the app owns its gateway.
+- Pair `useResolvedUrl`, `useDwebClient`, or configured gateways with `ipfs.server` when the app owns its gateway.
 - Pair `proxies` and `natspec` with `EvmArtifactModel` or contract-detail pages that need implementation ABI/docs.
 
 ## Practical Implementation Patterns
@@ -583,11 +578,11 @@ Pass `requestMint` into `EvmTransactionFlowDialog` rather than hand-rolling load
 import { createDwebFetch } from '@1001-digital/dweb-fetch'
 import { resolveTokenMetadata } from '@1001-digital/resolve-metadata'
 
-const dwebFetch = createDwebFetch({
+const dweb = createDwebFetch({
   ipfs: { mode: 'gateway' },
 })
 
-const raw = await dwebFetch(tokenUri).then((res) => res.json())
+const raw = await dweb.fetch(tokenUri).then((res) => res.json())
 const metadata = resolveTokenMetadata(raw)
 ```
 
@@ -706,7 +701,7 @@ Common UI variables:
   --card-background-highlight: #f8f8f8;
 
   --dialog-width: 32rem;
-  --backdrop-background-color: rgba(0, 0, 0, 0.5);
+  --backdrop-background: rgba(0, 0, 0, 0.5);
 }
 ```
 
@@ -805,7 +800,7 @@ pnpm why eventemitter3
 - Configure chains in `app.config.ts` and RPC/indexer endpoints in `runtimeConfig.public.evm`.
 - Add `NUXT_PUBLIC_EVM_*` env vars only for declared runtime config keys.
 - Use `EvmConnectDialog` for connection, `EvmAccount` for address display, and `EvmTransactionFlowDialog` for writes.
-- Pair SIWE UI with a backend verifier; do not treat UI-only SIWE as a session system.
+- Pair SIWE UI with nonce/verify backend endpoints; use a custom signing flow for backends that return a complete SIWE message.
 - Use base components before creating app-specific primitives.
 - Override CSS through tokens in global CSS first; write component CSS only when tokens are insufficient.
 - Check button/dialog CSS inheritance when custom UI looks stretched or miscentered.
