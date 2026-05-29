@@ -603,6 +603,55 @@ const metadata = resolveTokenMetadata(raw)
 <EvmArtifact :metadata="metadata" />
 ```
 
+### Customization Brief
+
+Before customizing a 1001 layer app, make the visual target explicit. Agents should not infer a brand system from package names or from a default scaffold. Ask the prompter for the missing detail when it would materially change the result.
+
+Minimum useful brief:
+
+- Style direction: operational dashboard, collectible gallery, protocol tool, editorial experience, game-like interface, or another named direction.
+- Density: compact/repeated-use workspace, spacious showcase, mobile-first, desktop-first, or responsive parity.
+- Scheme: light, dark, both, or a locked one-scheme app.
+- Palette: brand colors, neutral base, semantic colors, and whether gradients/textures/images are allowed.
+- Typography: system fonts, brand font, monospace/protocol feel, large editorial headings, or tight utility UI.
+- Shape language: radius scale, borders, shadows, dividers, cards, panels, and whether controls should feel native or custom.
+- Wallet UX tone: minimal header connect, prominent onboarding, Safe/operator workflow, in-app wallet education, or SIWE session app.
+- States to polish: disconnected, connecting, connected, wrong chain, signing, pending transaction, success, failure, empty data, loading data.
+
+If the brief is incomplete but the user wants you to proceed, state the assumptions in the implementation notes and keep them centralized in tokens so they can be changed quickly.
+
+### Customization Ladder
+
+Almost anything can be customized, but use the narrowest layer that matches the intent:
+
+1. Global semantic tokens: change the product-wide theme through `:root` variables such as `--background`, `--color`, `--primary`, `--muted`, `--border-radius`, spacing, font, and border tokens.
+2. Component tokens: change all buttons, forms, cards, dialogs, popovers, dropdowns, and toasts through their dedicated variables.
+3. Component props/classes: use props like `class-name` on EVM components and regular `class` on base components to style one product surface.
+4. App CSS selectors: write app-owned selectors for layout, composition, and one-off styling. Keep this in global CSS when it must affect dialogs, toasts, or wallet overlays.
+5. App-local component override: create an app component with the same name only when markup or behavior must change. The layer is designed to let Nuxt resolve app components over layer components.
+6. Package-level changes: change or fork 1001 packages only when the customization is a reusable upstream improvement.
+
+Prefer tokens for broad visual language, classes for per-instance product styling, and component overrides for behavior or markup changes. Avoid deep selectors until you have inspected the rendered component and confirmed no token, prop, slot, or class hook covers the need.
+
+### Token Dependency Map
+
+Layer components share token families. Overriding only one family can produce inconsistent UI.
+
+| Need | Start with these tokens |
+| --- | --- |
+| Page/app palette | `color-scheme`, `--background`, `--background-semi`, `--color`, `--color-semi`, `--muted`, `--primary`, `--error`, `--success` |
+| UI typography | `--ui-font-family`, `--ui-font-size`, `--ui-font-weight`, `--ui-text-transform`, `--ui-letter-spacing`, `--ui-line-height`, `--ui-color`, `--ui-placeholder-color` |
+| Layout rhythm | `--spacer-*`, `--size-*`, `--content-width*`, `--form-width`, `--dialog-width` |
+| Borders/shadows/radius | `--border-width`, `--border-color`, `--border-color-highlight`, `--border-radius*`, `--border`, `--border-shadow`, `--border-shadow-highlight`, `--shadow` |
+| Buttons and wallet triggers | `--button-background`, `--button-background-highlight`, `--button-color`, `--button-color-highlight`, `--button-icon-color`, `--button-icon-color-highlight`, primary/tertiary button tokens |
+| Inputs/selects/textareas | `--input-background`, `--input-background-highlight`, `--input-text-transform`, shared `--ui-*`, shared border tokens |
+| Cards/artifacts/list items | `--card-background`, `--card-background-highlight`, `--card-border`, `--card-border-radius`, `--card-border-color-highlight` |
+| Dialogs and wallet overlays | `--dialog-width`, `--dialog-border-radius`, `--dialog-header-background`, `--dialog-close-color`, `--backdrop-background` |
+| Popovers/dropdowns | `--popover-*`, `--dropdown-*` |
+| Toasts | `--toast-width`, `--toast-inset`, `--toast-border-radius`, `--toast-*-color`, `--toast-*-background`, `--toast-*-border-color`, `--toast-*-header-background` |
+
+Native form elements are styled by the base layer too. Buttons, inputs, textareas, and selects all consume `--ui-*`, `--button-*`, form height, border shadow, and sometimes `--input-*`. This is why visual themes should update button and input tokens together.
+
 ### Global App CSS
 
 Put global token overrides in a non-scoped stylesheet loaded by Nuxt, or in an unscoped `app.vue` style block:
@@ -624,6 +673,8 @@ Put global token overrides in a non-scoped stylesheet loaded by Nuxt, or in an u
 
 Avoid scoped token definitions for global UI variables. Scoped styles add attributes and will not reliably affect layer components mounted outside the component subtree, such as global toasts.
 
+Use one app-level CSS file as the theme source of truth. Keep token definitions near the top, then product layout classes, then one-off component classes. When a value is reused more than once, make it a token before copying it into selectors.
+
 ### Theme And Wallet Contrast
 
 When an app changes the layer's palette, pin the browser color scheme and override the component tokens that wallet dialogs, profile buttons, inputs, and native form controls actually consume. A common failure is setting `--color` to dark text while the browser still resolves dark-scheme component backgrounds, producing dark text on dark wallet buttons.
@@ -636,6 +687,8 @@ For a light custom app theme:
   --background: #f6f3ec;
   --color: #151515;
   --primary: #237a57;
+  --ui-color: var(--color);
+  --ui-placeholder-color: #8a8377;
 
   --button-background: #ffffff;
   --button-background-highlight: #f0ebe1;
@@ -653,7 +706,6 @@ For a light custom app theme:
 
   --input-background: #ffffff;
   --input-background-highlight: #ffffff;
-  --input-color: var(--color);
 }
 ```
 
@@ -882,6 +934,7 @@ pnpm why eventemitter3
 - Use `EvmConnectDialog` for connection, `EvmAccount` for address display, and `EvmTransactionFlowDialog` for writes.
 - Pair SIWE UI with nonce/verify backend endpoints; use a custom signing flow for backends that return a complete SIWE message.
 - Use base components before creating app-specific primitives.
+- Before custom styling, confirm the style direction, density, scheme, palette, typography, shape language, wallet UX tone, and important states.
 - Override CSS through tokens in global CSS first; write component CSS only when tokens are insufficient.
 - Set `color-scheme` when overriding the app palette, and override button/input tokens instead of only `--background` and `--color`.
 - Style both `EvmConnectDialog`'s disconnected trigger and the `EvmProfile` trigger rendered in its connected slot.
