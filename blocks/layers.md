@@ -46,9 +46,9 @@ For a Nuxt EVM dapp:
 pnpm add @1001-digital/layers.evm @wagmi/vue @wagmi/core viem
 ```
 
-Install wagmi and viem as direct app dependencies because the guide's read/write examples import from them and pnpm does not expose transitive dependencies to app source.
+Keep `@wagmi/vue`, `@wagmi/core`, and `viem` as direct app dependencies when app code imports them, as the examples in this guide do. The layer can use its own nested runtime dependencies internally, but app source should not rely on nested packages being importable or version-compatible. With pnpm's strict `node_modules` layout, a fresh app that installs only `@1001-digital/layers.evm` does not resolve these packages from app-level imports.
 
-If the package manager or workspace setup does not expose transitive layer packages cleanly, add the public 1001 packages directly too:
+Only add the public 1001 packages directly when the app imports them by package name or needs to debug/bypass Nuxt layer auto-registration:
 
 ```sh
 pnpm add @1001-digital/layers.evm @1001-digital/components @1001-digital/components.evm @1001-digital/styles @wagmi/vue @wagmi/core viem
