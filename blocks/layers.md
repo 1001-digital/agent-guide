@@ -17,7 +17,6 @@ Use this guide when an agent needs to build a Nuxt/Vue dapp with 1001 UI, EVM wa
 - Do not use the EVM layer for a non-EVM app that only needs base UI. Use `@1001-digital/layers.base`.
 - Do not import `@1001-digital/components.evm` directly in a Nuxt app unless you are deliberately bypassing the layer. The layer handles auto-registration, client-only wrappers, wagmi setup, and aliases.
 - Do not use `layers.evm` as a backend auth system. It provides client UI and message helpers; the app still owns nonce storage, session persistence, and server verification.
-- Do not hard-code colors, spacing, border radii, or button styles when a token exists. Override CSS variables first.
 
 ## Packages/Repos Involved
 
@@ -43,15 +42,23 @@ Dependency direction:
 For a Nuxt EVM dapp:
 
 ```sh
-pnpm add @1001-digital/layers.evm @wagmi/vue @wagmi/core viem
+pnpm add @1001-digital/layers.evm
 ```
 
-Keep `@wagmi/vue`, `@wagmi/core`, and `viem` as direct app dependencies when app code imports them, as the examples in this guide do. The layer can use its own nested runtime dependencies internally, but app source should not rely on nested packages being importable or version-compatible. With pnpm's strict `node_modules` layout, a fresh app that installs only `@1001-digital/layers.evm` does not resolve these packages from app-level imports.
+This is the clean install for using the Nuxt layer. It provides the EVM layer, base layer, component libraries, styles, and wallet runtime wiring that the layer uses internally.
 
-Only add the public 1001 packages directly when the app imports them by package name or needs to debug/bypass Nuxt layer auto-registration:
+Do not add `@1001-digital/components`, `@1001-digital/components.evm`, `@1001-digital/styles`, wagmi, or viem just to use `@1001-digital/layers.evm`.
+
+Only add lower-level packages when app source imports them directly. For example, custom read/write code that imports raw wagmi or viem APIs should declare those packages as app dependencies:
 
 ```sh
-pnpm add @1001-digital/layers.evm @1001-digital/components @1001-digital/components.evm @1001-digital/styles @wagmi/vue @wagmi/core viem
+pnpm add @wagmi/core viem
+```
+
+Only add the public 1001 packages directly when the app imports them by package name or deliberately bypasses Nuxt layer auto-registration:
+
+```sh
+pnpm add @1001-digital/components @1001-digital/components.evm @1001-digital/styles
 ```
 
 For a Nuxt app that only needs base UI:
@@ -227,6 +234,8 @@ function onDisconnected() {
 
 Address and ETH input pattern:
 
+`EvmAddressInput` accepts an address or ENS name and shows the resolved counterpart below the input when resolution succeeds. `EvmEthInput` keeps the human ETH string and wei value in sync.
+
 ```vue
 <template>
   <Form>
@@ -241,25 +250,13 @@ Address and ETH input pattern:
         placeholder="0.05"
       />
     </FormLabel>
-
-    <EvmAccount
-      v-if="recipientAddress"
-      :address="recipientAddress"
-      resolve-ens
-    />
   </Form>
 </template>
 
 <script setup lang="ts">
-import { isAddress, type Address } from 'viem'
-
 const recipient = ref('')
 const ethAmount = ref('')
 const weiAmount = ref<bigint | null>(null)
-
-const recipientAddress = computed<Address | undefined>(() =>
-  isAddress(recipient.value) ? recipient.value : undefined,
-)
 </script>
 ```
 
@@ -275,6 +272,8 @@ Use transaction flow components whenever a user action calls `writeContract`, se
 | `EvmMultiTransactionFlowDialog` | Dialog wrapper for multi-transaction flow. | Best for batch operations. |
 
 Basic write pattern:
+
+This pattern uses raw wagmi from app code, so add `@wagmi/core` as a direct dependency when you copy it. This is not required for the layer itself.
 
 ```vue
 <template>
@@ -298,11 +297,10 @@ Basic write pattern:
 
 <script setup lang="ts">
 import { writeContract } from '@wagmi/core'
-import type { Hash } from 'viem'
 
 const wagmiConfig = useConfig()
 
-async function mint(): Promise<Hash> {
+async function mint() {
   return writeContract(wagmiConfig, {
     address: '0x0000000000000000000000000000000000000000',
     abi: [],
@@ -441,7 +439,11 @@ const { address, chainId, status, connector } = useAccount()
 const wagmiConfig = useConfig()
 ```
 
-Use `@wagmi/core` for reads and writes:
+Use `@wagmi/core` for low-level reads and writes when the component layer does not cover the app's contract interaction. If app code imports `@wagmi/core` or `viem`, add those packages directly:
+
+```sh
+pnpm add @wagmi/core viem
+```
 
 ```ts
 import { readContract, writeContract } from '@wagmi/core'
@@ -564,6 +566,8 @@ The base layer mounts global toasts and confirm dialogs automatically. Do not ma
 ```
 
 ### Write Action With Chain Guard
+
+This snippet imports raw wagmi from app code; install `@wagmi/core` directly only when the app uses this kind of low-level write helper.
 
 ```ts
 import { writeContract } from '@wagmi/core'
@@ -759,6 +763,8 @@ Before shipping, test the disconnected connect trigger, wallet selection dialog,
 | `utilities` | Utility classes intended to override component defaults when needed. |
 
 Styles outside `@layer` win over layer styles. App-level CSS can override component styles directly, but prefer variables when available.
+
+Do not hard-code colors, spacing, border radii, or button styles when a token exists. Override CSS variables first, then use focused selector overrides only for component structure or one-off states that do not have a token.
 
 ### Core Tokens
 
