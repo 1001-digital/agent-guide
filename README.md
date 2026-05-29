@@ -13,7 +13,7 @@ For a new Nuxt/Vue EVM dapp, start here:
 1. Build the app on [`@1001-digital/layers.evm`](blocks/layers.md) for wallet UX, EVM components, transaction flows, and the shared design system.
 2. Add [`dapp-query`](blocks/data.md) when chain reads need indexed/RPC fallback, browser cache, or live updates.
 3. Use the [`metadata`](blocks/metadata.md) stack for token URIs, contract URIs, IPFS, IPNS, Arweave, and NFT metadata normalization.
-4. Add [`simple-indexer`](blocks/indexing.md) for local browser/server indexing, or the Ponder helpers when working inside a Ponder app.
+4. Add [`simple-indexer`](blocks/indexing.md) from a local built checkout for browser/server indexing, or the Ponder helpers when working inside a Ponder app.
 5. Reach for [`proxies` and `natspec`](blocks/contract-intelligence.md) when the app needs to understand contracts, implementations, facets, or human-readable verified docs.
 
 ## Block Matrix
@@ -27,7 +27,7 @@ For a new Nuxt/Vue EVM dapp, start here:
 | IPFS/IPNS/Arweave/eip155 fetching | `@1001-digital/dweb-fetch` | [Metadata guide](blocks/metadata.md) |
 | Canonical dweb URLs and raw CIDs | `@1001-digital/normalize-dweb-url` | [Metadata guide](blocks/metadata.md) |
 | NFT and contract metadata normalization | `@1001-digital/resolve-metadata` | [Metadata guide](blocks/metadata.md) |
-| Lightweight event indexing | `@1001-digital/simple-indexer` | [Indexing guide](blocks/indexing.md) |
+| Lightweight event indexing | `@1001-digital/simple-indexer` import from local built checkout | [Indexing guide](blocks/indexing.md) |
 | Ponder artifact and ENS caches | `@1001-digital/ponder-artifacts`, `@1001-digital/ponder-ens` | [Indexing guide](blocks/indexing.md) |
 | NFT contract extensions | `@1001-digital/erc721-extensions` | [Contracts guide](blocks/contracts.md) |
 | Address type helpers | `@1001-digital/check-address` | [Contracts guide](blocks/contracts.md) |
@@ -45,7 +45,7 @@ For a new Nuxt/Vue EVM dapp, start here:
 - Normalize decentralized URLs before storing them.
 - Normalize metadata before rendering it.
 - Use dapp-query when a direct RPC-only read would be fragile.
-- Use `simple-indexer` for small owned indexes; use the Ponder helpers inside Ponder apps.
+- Use `simple-indexer` from a local/source checkout for small owned indexes; use the registry-published Ponder helpers inside Ponder apps.
 - When changing a 1001 app theme, set the browser `color-scheme`, override component tokens, and visually verify wallet connect/profile states.
 - Treat in-app wallets as local-key custody.
 - Treat IPFS server setup as infrastructure, not an app dependency.

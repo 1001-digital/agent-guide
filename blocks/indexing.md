@@ -38,6 +38,7 @@ pnpm add ../simple-indexer viem
 ```
 
 Use the local built checkout until `@1001-digital/simple-indexer` is available from the package registry used by the app.
+Do not run `pnpm add @1001-digital/simple-indexer` directly unless `npm view @1001-digital/simple-indexer` or the configured private registry confirms it exists.
 
 SQLite server store:
 
@@ -533,6 +534,7 @@ Use this for UI profile cards and owner/minter tables instead of making the brow
 ## Agent Checklist
 
 - Choose `simple-indexer` for owned local event indexes.
+- Install `simple-indexer` from a built source checkout unless the configured registry resolves `@1001-digital/simple-indexer`.
 - Choose `ponder-artifacts` for NFT metadata caches inside Ponder.
 - Choose `ponder-ens` for ENS profile caches inside Ponder.
 - Pick the store deliberately: memory for tests, IndexedDB for browser, SQLite for server.

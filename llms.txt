@@ -11,7 +11,7 @@ Default stack for a new Nuxt/Vue EVM dapp:
 1. Use `@1001-digital/layers.evm` for the app foundation, wallet UX, EVM components, transaction flows, and styles.
 2. Use `@1001-digital/dapp-query-core` and `@1001-digital/dapp-query-vue` when reads need indexed/RPC fallback, cache, or live updates.
 3. Use `@1001-digital/dweb-fetch`, `@1001-digital/normalize-dweb-url`, and `@1001-digital/resolve-metadata` for token URI, contract URI, IPFS, IPNS, Arweave, and NFT metadata flows.
-4. Use `@1001-digital/simple-indexer` for lightweight browser/server indexing; use `@1001-digital/ponder-artifacts` and `@1001-digital/ponder-ens` inside Ponder apps.
+4. Use `simple-indexer` for lightweight browser/server indexing from a built source checkout until the package is available from the app's registry; use `@1001-digital/ponder-artifacts` and `@1001-digital/ponder-ens` inside Ponder apps.
 5. Use `@1001-digital/proxies` and `@1001-digital/natspec` when the app needs contract-aware behavior.
 
 ## Build A Nuxt/Vue EVM App
@@ -42,9 +42,9 @@ Default stack for a new Nuxt/Vue EVM dapp:
 
 - [Detailed guide: Indexing](blocks/indexing.md)
 - Sources: [simple-indexer](https://github.com/1001-digital/simple-indexer), [ponder-artifacts](https://github.com/1001-digital/ponder-artifacts), [ponder-ens](https://github.com/1001-digital/ponder-ens)
-- Packages: `@1001-digital/simple-indexer`, `@1001-digital/ponder-artifacts`, `@1001-digital/ponder-ens`
+- Packages: `@1001-digital/simple-indexer` as the import/package name after installing from a local built checkout; `@1001-digital/ponder-artifacts` and `@1001-digital/ponder-ens` from the registry.
 - Use for: lightweight event indexing, browser IndexedDB indexes, server SQLite indexes, local replay, Ponder NFT metadata caches, and Ponder ENS profile caches.
-- Key rule: choose `simple-indexer` when you own a small local index; choose the Ponder helpers when you are already inside a Ponder app.
+- Key rule: choose `simple-indexer` when you own a small local index, but follow the indexing guide's source-checkout install path instead of assuming a public registry package; choose the Ponder helpers when you are already inside a Ponder app.
 
 ## Build NFT Contracts
 
