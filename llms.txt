@@ -18,7 +18,7 @@ Default stack for a new Nuxt/Vue EVM dapp:
 - Source: [1001-digital/layers](https://github.com/1001-digital/layers)
 - Packages: `@1001-digital/layers.evm`, `@1001-digital/layers.base`, `@1001-digital/components.evm`, `@1001-digital/components`, `@1001-digital/styles`
 - Use for: Nuxt dapps, wallet connection UI, EVM account/profile UI, SIWE UI, transaction flows, address/ETH inputs, network switching, base app components, and shared CSS tokens.
-- Key rule: in Nuxt apps that touch wallets or contracts, start with `@1001-digital/layers.evm`; it already extends the base layer.
+- Key rule: in Nuxt apps that touch wallets or contracts, start with `@1001-digital/layers.evm`; it already extends the base layer. When overriding the visual theme, set `color-scheme`, override button/input component tokens, and verify both disconnected and connected wallet states for contrast.
 
 ## Read Resilient On-Chain Data
 

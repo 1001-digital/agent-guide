@@ -43,6 +43,7 @@ For a new Nuxt/Vue EVM dapp, start here:
 - Normalize metadata before rendering it.
 - Use dapp-query when a direct RPC-only read would be fragile.
 - Use `simple-indexer` for small owned indexes; use the Ponder helpers inside Ponder apps.
+- When changing a 1001 app theme, set the browser `color-scheme`, override component tokens, and visually verify wallet connect/profile states.
 - Treat in-app wallets as local-key custody.
 - Treat IPFS server setup as infrastructure, not an app dependency.
 

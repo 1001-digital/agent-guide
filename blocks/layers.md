@@ -549,9 +549,12 @@ The base layer mounts global toasts and confirm dialogs automatically. Do not ma
       <NuxtLink to="/mint">Mint</NuxtLink>
     </nav>
 
-    <EvmConnectDialog>
+    <EvmConnectDialog class-name="wallet-button">
+      <template #default>
+        Connect
+      </template>
       <template #connected="{ address }">
-        <EvmProfile>
+        <EvmProfile class-name="wallet-button">
           <EvmAccount :address="address" resolve-ens />
         </EvmProfile>
       </template>
@@ -607,6 +610,7 @@ Put global token overrides in a non-scoped stylesheet loaded by Nuxt, or in an u
 ```vue
 <style>
 :root {
+  color-scheme: light;
   --font-family: Inter, system-ui, sans-serif;
   --background: #ffffff;
   --color: #141414;
@@ -619,6 +623,70 @@ Put global token overrides in a non-scoped stylesheet loaded by Nuxt, or in an u
 ```
 
 Avoid scoped token definitions for global UI variables. Scoped styles add attributes and will not reliably affect layer components mounted outside the component subtree, such as global toasts.
+
+### Theme And Wallet Contrast
+
+When an app changes the layer's palette, pin the browser color scheme and override the component tokens that wallet dialogs, profile buttons, inputs, and native form controls actually consume. A common failure is setting `--color` to dark text while the browser still resolves dark-scheme component backgrounds, producing dark text on dark wallet buttons.
+
+For a light custom app theme:
+
+```css
+:root {
+  color-scheme: light;
+  --background: #f6f3ec;
+  --color: #151515;
+  --primary: #237a57;
+
+  --button-background: #ffffff;
+  --button-background-highlight: #f0ebe1;
+  --button-color: var(--color);
+  --button-color-highlight: var(--color);
+  --button-icon-color: #6b665d;
+  --button-icon-color-highlight: var(--color);
+
+  --button-primary-background: #151515;
+  --button-primary-background-highlight: #31302d;
+  --button-primary-border-color: #151515;
+  --button-primary-border-color-highlight: #31302d;
+  --button-primary-color: #fffdf8;
+  --button-primary-color-highlight: #fffdf8;
+
+  --input-background: #ffffff;
+  --input-background-highlight: #ffffff;
+  --input-color: var(--color);
+}
+```
+
+If the header uses a custom connect button class, apply equivalent styling to the connected profile trigger too. `EvmConnectDialog`'s `class-name` only styles its disconnected trigger; the `#connected` slot owns the connected button.
+
+```vue
+<EvmConnectDialog class-name="wallet-button">
+  <template #default>
+    <Wallet :size="17" />
+    <span>Connect</span>
+  </template>
+
+  <template #connected="{ address }">
+    <EvmProfile class-name="wallet-button">
+      <EvmAccount :address="address" resolve-ens />
+    </EvmProfile>
+  </template>
+</EvmConnectDialog>
+```
+
+```css
+.wallet-button {
+  border: 1px solid #151515;
+  background: #151515;
+  color: #fffdf8 !important;
+}
+
+.wallet-button :is(span, strong, small, .icon) {
+  color: inherit;
+}
+```
+
+Before shipping, test the disconnected connect trigger, wallet selection dialog, in-app wallet setup path, connected profile trigger, profile dialog, network switcher, and disconnect action. Browser-computed `color` and `background-color` are the fastest way to catch contrast mismatches.
 
 ## CSS/Config/Runtime/Env Details
 
@@ -801,6 +869,7 @@ pnpm why eventemitter3
 - In-app wallet UX without consent: only enable in-app wallet flows when the product explicitly explains local key custody.
 - Safe App metadata: do not assume the installed `@1001-digital/layers.evm` package serves `/manifest.json`. The published package may omit the server route even when the source repo has one; add an app-local route or confirm the installed version ships it before relying on Safe App browser metadata.
 - Scoped CSS variables: scoped styles may not affect global overlays, toasts, or dialogs.
+- Theme contrast drift: if `color-scheme`, `--color`, and component tokens disagree, wallet/connect/profile buttons can become unreadable. Always override button/input tokens together and test connected and disconnected wallet states.
 - Manual `Toasts` rendering: unnecessary in Nuxt layer apps; the global plugin mounts them.
 - Direct component imports outside Nuxt: you must configure Vue, wagmi, viem, styles, and client-only behavior yourself.
 
@@ -814,5 +883,8 @@ pnpm why eventemitter3
 - Pair SIWE UI with nonce/verify backend endpoints; use a custom signing flow for backends that return a complete SIWE message.
 - Use base components before creating app-specific primitives.
 - Override CSS through tokens in global CSS first; write component CSS only when tokens are insufficient.
+- Set `color-scheme` when overriding the app palette, and override button/input tokens instead of only `--background` and `--color`.
+- Style both `EvmConnectDialog`'s disconnected trigger and the `EvmProfile` trigger rendered in its connected slot.
 - Check button/dialog CSS inheritance when custom UI looks stretched or miscentered.
+- Browser-check wallet connect, wallet setup, connected profile, and profile/network dialogs for text/background contrast.
 - Pair with metadata, data, indexing, wallet/auth, or contract-intelligence guides when the app crosses into those tasks.
