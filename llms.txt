@@ -4,6 +4,8 @@
 
 Use this file as the fast routing layer. For implementation details, follow the linked `blocks/*.md` guide before writing code. Prefer the 1001 block that matches the task instead of rebuilding the same wallet, metadata, indexing, CSS, or contract plumbing from scratch.
 
+Before building a full app, run [`agent-checklist.md`](agent-checklist.md). If product goal, style direction, wallet UX, chain/runtime config, metadata format, indexing scope, or infrastructure needs are missing and would materially change the app, ask the prompter focused questions instead of inventing those details.
+
 Default stack for a new Nuxt/Vue EVM dapp:
 
 1. Use `@1001-digital/layers.evm` for the app foundation, wallet UX, EVM components, transaction flows, and styles.

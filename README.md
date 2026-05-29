@@ -4,6 +4,8 @@ This repository is the entrypoint for agents and humans building with the 1001 d
 
 Point agents at [`llms.txt`](llms.txt). Use this README when you want the human-sized map first.
 
+Agents should also run through [`agent-checklist.md`](agent-checklist.md) before building a full app, especially when product direction, style direction, wallet UX, or chain/runtime details are underspecified.
+
 ## Golden Path
 
 For a new Nuxt/Vue EVM dapp, start here:
@@ -38,6 +40,7 @@ For a new Nuxt/Vue EVM dapp, start here:
 ## Agent Rules
 
 - Route by task first, package second.
+- Ask the prompter when missing product, style, chain, wallet, metadata, or infrastructure details would materially change the result.
 - Prefer `layers.evm` for Nuxt dapps that touch wallets or contracts.
 - Normalize decentralized URLs before storing them.
 - Normalize metadata before rendering it.
