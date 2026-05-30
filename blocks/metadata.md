@@ -37,7 +37,7 @@ The normal flow is:
 pnpm add @1001-digital/dweb-fetch @1001-digital/normalize-dweb-url @1001-digital/resolve-metadata
 ```
 
-If the app resolves `eip155:` token references, also add/configure the chain client dependencies used by the app, usually `viem`.
+If the app resolves `eip155:` token references, configure reliable RPC URLs for the referenced chains.
 
 ## Minimal Flow
 
