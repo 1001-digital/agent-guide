@@ -1,78 +1,71 @@
 # 1001 Dapp Lego Blocks
 
-> Agent entrypoint for choosing and using 1001-native building blocks for EVM dapps, NFT apps, decentralized-web metadata, indexing, wallet UX, auth, contracts, and IPFS infrastructure.
+This is the compact routing file for agents building with 1001-native dapp blocks. Use it to choose the right block first, then read the linked guide for the normal setup path.
 
-Use this file as the fast routing layer. For implementation details, follow the linked `blocks/*.md` guide before writing code. Prefer the 1001 block that matches the task instead of rebuilding the same wallet, metadata, indexing, CSS, or contract plumbing from scratch.
+The guides cover the basics agents need to start correctly. They are not exhaustive API references. When an exact component prop, contract method, or package export matters, inspect the source repo before inventing details.
 
-Before building a full app, run [`agent-checklist.md`](agent-checklist.md). If product goal, style direction, wallet UX, chain/runtime config, metadata format, indexing scope, or infrastructure needs are missing and would materially change the app, ask the prompter focused questions instead of inventing those details.
+Before building a full app, skim [`agent-checklist.md`](agent-checklist.md). If product goal, style direction, wallet UX, chains, contracts, metadata format, or infrastructure ownership are unclear and would change the result, ask the prompter.
 
-Default stack for a new Nuxt/Vue EVM dapp:
+Default path for a Nuxt/Vue EVM dapp:
 
-1. Use `@1001-digital/layers.evm` for the app foundation, wallet UX, EVM components, transaction flows, and styles.
-2. Use `@1001-digital/dapp-query-core` and `@1001-digital/dapp-query-vue` when reads need indexed/RPC fallback, cache, or live updates.
-3. Use `@1001-digital/dweb-fetch`, `@1001-digital/normalize-dweb-url`, and `@1001-digital/resolve-metadata` for token URI, contract URI, IPFS, IPNS, Arweave, and NFT metadata flows.
-4. Use `simple-indexer` for lightweight browser/server indexing from a built source checkout until the package is available from the app's registry; use `@1001-digital/ponder-artifacts` and `@1001-digital/ponder-ens` inside Ponder apps.
-5. Use `@1001-digital/proxies` and `@1001-digital/natspec` when the app needs contract-aware behavior.
+1. Start with `@1001-digital/layers.evm`.
+2. Add dapp-query only when reads need fallback, cache, or live updates.
+3. Add the metadata stack for IPFS/IPNS/Arweave/token URI normalization.
+4. Add indexing only when the app needs its own event-derived data.
+5. Add contract intelligence, auth, contracts, or IPFS infra only when the product actually calls for them.
 
-## Build A Nuxt/Vue EVM App
+## Nuxt/Vue EVM App Foundation
 
-- [Detailed guide: Layers](blocks/layers.md)
-- Source: [1001-digital/layers](https://github.com/1001-digital/layers)
+- Guide: [`blocks/layers.md`](blocks/layers.md)
+- Source: <https://github.com/1001-digital/layers>
 - Packages: `@1001-digital/layers.evm`, `@1001-digital/layers.base`, `@1001-digital/components.evm`, `@1001-digital/components`, `@1001-digital/styles`
-- Use for: Nuxt dapps, wallet connection UI, EVM account/profile UI, SIWE UI, transaction flows, address/ETH inputs, network switching, base app components, and shared CSS tokens.
-- Key rule: in Nuxt apps that touch wallets or contracts, start with `@1001-digital/layers.evm`; it already extends the base layer. When overriding the visual theme, set `color-scheme`, override button/input component tokens, and verify both disconnected and connected wallet states for contrast.
+- Use for: Nuxt app shell, wallet connection, EVM account/profile UI, transaction flows, SIWE UI, base components, and shared CSS tokens.
+- Start with: `pnpm add @1001-digital/layers.evm`
 
-## Read Resilient On-Chain Data
+## Resilient App Data
 
-- [Detailed guide: Data](blocks/data.md)
-- Source: [1001-digital/dapp-query](https://github.com/1001-digital/dapp-query)
+- Guide: [`blocks/data.md`](blocks/data.md)
+- Source: <https://github.com/1001-digital/dapp-query>
 - Packages: `@1001-digital/dapp-query-core`, `@1001-digital/dapp-query-vue`
-- Use for: queries that should survive indexer downtime, RPC slowness, endpoint failure, duplicate sources, browser reloads, and live chain updates.
-- Key rule: define the data shape once, then compose indexed sources and RPC sources behind one query client.
+- Use for: one query interface over indexed data, RPC fallback, HTTP sources, cache, and live updates.
 
-## Fetch And Normalize Dweb Metadata
+## Dweb And NFT Metadata
 
-- [Detailed guide: Metadata](blocks/metadata.md)
-- Sources: [dweb-fetch](https://github.com/1001-digital/dweb-fetch), [normalize-dweb-url](https://github.com/1001-digital/normalize-dweb-url), [resolve-metadata](https://github.com/1001-digital/resolve-metadata)
+- Guide: [`blocks/metadata.md`](blocks/metadata.md)
+- Sources: <https://github.com/1001-digital/dweb-fetch>, <https://github.com/1001-digital/normalize-dweb-url>, <https://github.com/1001-digital/resolve-metadata>
 - Packages: `@1001-digital/dweb-fetch`, `@1001-digital/normalize-dweb-url`, `@1001-digital/resolve-metadata`
-- Use for: `ipfs://`, `ipns://`, `ar://`, gateway URLs, raw CIDs, `eip155:` NFT references, ERC-721 metadata, ERC-1155 metadata, and `contractURI` metadata.
-- Key rule: normalize identifiers before storing them, fetch through dweb-aware clients, then normalize metadata before rendering.
+- Use for: `ipfs://`, `ipns://`, `ar://`, gateway URLs, CIDs, `eip155:` references, token metadata, and contract metadata.
 
-## Index Chain Events
+## Event Indexing
 
-- [Detailed guide: Indexing](blocks/indexing.md)
-- Sources: [simple-indexer](https://github.com/1001-digital/simple-indexer), [ponder-artifacts](https://github.com/1001-digital/ponder-artifacts), [ponder-ens](https://github.com/1001-digital/ponder-ens)
-- Packages: `@1001-digital/simple-indexer` as the import/package name after installing from a local built checkout; `@1001-digital/ponder-artifacts` and `@1001-digital/ponder-ens` from the registry.
-- Use for: lightweight event indexing, browser IndexedDB indexes, server SQLite indexes, local replay, Ponder NFT metadata caches, and Ponder ENS profile caches.
-- Key rule: choose `simple-indexer` when you own a small local index, but follow the indexing guide's source-checkout install path instead of assuming a public registry package; choose the Ponder helpers when you are already inside a Ponder app.
+- Guide: [`blocks/indexing.md`](blocks/indexing.md)
+- Sources: <https://github.com/1001-digital/simple-indexer>, <https://github.com/1001-digital/ponder-artifacts>, <https://github.com/1001-digital/ponder-ens>
+- Packages: `@1001-digital/simple-indexer`, `@1001-digital/ponder-artifacts`, `@1001-digital/ponder-ens`
+- Use for: small owned event indexes, browser/server stores, and Ponder-side artifact or ENS caches.
 
-## Build NFT Contracts
+## NFT Contracts
 
-- [Detailed guide: Contracts](blocks/contracts.md)
-- Sources: [erc721-extensions](https://github.com/1001-digital/erc721-extensions), [check-address](https://github.com/1001-digital/check-address)
+- Guide: [`blocks/contracts.md`](blocks/contracts.md)
+- Sources: <https://github.com/1001-digital/erc721-extensions>, <https://github.com/1001-digital/check-address>
 - Packages: `@1001-digital/erc721-extensions`, `@1001-digital/check-address`
-- Use for: OpenZeppelin-based ERC-721/ERC-1155 extensions, supply assignment, minting helpers, metadata helpers, and address-type checks.
-- Key rule: use `check-address` only when the constructor-bypass limitation is acceptable for the product/security model.
+- Use for: OpenZeppelin-based NFT extension modules and address type checks.
 
-## Inspect Contracts And Proxies
+## Contract Intelligence
 
-- [Detailed guide: Contract Intelligence](blocks/contract-intelligence.md)
-- Sources: [proxies](https://github.com/1001-digital/proxies), [natspec](https://github.com/1001-digital/natspec)
+- Guide: [`blocks/contract-intelligence.md`](blocks/contract-intelligence.md)
+- Sources: <https://github.com/1001-digital/proxies>, <https://github.com/1001-digital/natspec>
 - Packages: `@1001-digital/proxies`, `@1001-digital/natspec`
-- Use for: EIP-1967 proxies, EIP-2535 diamonds, EIP-1167 clones, beacons, Safe proxies, implementation discovery, composite ABI workflows, and verified-contract NatSpec.
-- Key rule: use these for contract-aware apps and developer tools; bring your own verifier/source/ABI enrichment when needed.
+- Use for: proxy/diamond/clone/beacon detection and verified-contract NatSpec.
 
-## Add Wallets And Auth
+## Wallets And Auth
 
-- [Detailed guide: Wallet Auth](blocks/wallet-auth.md)
-- Sources: [wagmi-in-app-wallet](https://github.com/1001-digital/wagmi-in-app-wallet), [adonis-siwe](https://github.com/1001-digital/adonis-siwe)
+- Guide: [`blocks/wallet-auth.md`](blocks/wallet-auth.md)
+- Sources: <https://github.com/1001-digital/wagmi-in-app-wallet>, <https://github.com/1001-digital/adonis-siwe>
 - Packages: `@1001-digital/wagmi-in-app-wallet`, `@1001-digital/adonis-siwe`
-- Use for: local mnemonic-based wagmi wallets, onboarding/test wallets, and Sign-In with Ethereum sessions in AdonisJS backends.
-- Key rule: never hide key custody from users; treat in-app wallet storage as local-key material and use SIWE only when a server-trusted wallet session is needed.
+- Use for: local in-app wagmi wallets and SIWE sessions in AdonisJS backends.
 
-## Run IPFS Infrastructure
+## IPFS Infrastructure
 
-- [Detailed guide: Infra](blocks/infra.md)
-- Source: [1001-digital/ipfs.server](https://github.com/1001-digital/ipfs.server)
-- Use for: deployable Kubo IPFS node infrastructure with a public pinned-content gateway and authenticated admin API.
-- Key rule: this is infrastructure, not an app dependency. Use it when the project needs its own pinning/gateway/IPNS operations.
+- Guide: [`blocks/infra.md`](blocks/infra.md)
+- Source: <https://github.com/1001-digital/ipfs.server>
+- Use for: running owned Kubo/IPFS gateway, pinning, and admin infrastructure.

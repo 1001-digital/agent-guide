@@ -1,67 +1,37 @@
 # 1001 Agent Guide
 
-This repository is the entrypoint for agents and humans building with the 1001 dapp lego blocks.
+This repo is the quick map for agents and humans building dapps with 1001 lego blocks.
 
-Point agents at [`llms.txt`](llms.txt). Use this README when you want the human-sized map first.
-
-Agents should also run through [`agent-checklist.md`](agent-checklist.md) before building a full app, especially when product direction, style direction, wallet UX, or chain/runtime details are underspecified.
+Point agents at [`llms.txt`](llms.txt). Use this README for the human overview.
 
 ## Golden Path
 
-For a new Nuxt/Vue EVM dapp, start here:
+For a new Nuxt/Vue EVM dapp:
 
-1. Build the app on [`@1001-digital/layers.evm`](blocks/layers.md) for wallet UX, EVM components, transaction flows, and the shared design system.
-2. Add [`dapp-query`](blocks/data.md) when chain reads need indexed/RPC fallback, browser cache, or live updates.
-3. Use the [`metadata`](blocks/metadata.md) stack for token URIs, contract URIs, IPFS, IPNS, Arweave, and NFT metadata normalization.
-4. Add [`simple-indexer`](blocks/indexing.md) from a local built checkout for browser/server indexing, or the Ponder helpers when working inside a Ponder app.
-5. Reach for [`proxies` and `natspec`](blocks/contract-intelligence.md) when the app needs to understand contracts, implementations, facets, or human-readable verified docs.
+1. Start with [`@1001-digital/layers.evm`](blocks/layers.md).
+2. Add [`dapp-query`](blocks/data.md) only when reads need fallback, cache, or live updates.
+3. Add the [`metadata`](blocks/metadata.md) stack for token URIs, IPFS/IPNS/Arweave, or NFT metadata.
+4. Add [`indexing`](blocks/indexing.md) when the app needs its own event-derived data.
+5. Add contracts, contract intelligence, auth, or IPFS infrastructure only when the product needs that layer.
 
-## Block Matrix
+## Blocks
 
-| Need | Use | Start here |
+| Need | Use | Guide |
 | --- | --- | --- |
-| Nuxt/Vue EVM app foundation | `@1001-digital/layers.evm`, `@1001-digital/layers.base`, `@1001-digital/components.evm`, `@1001-digital/components`, `@1001-digital/styles` | [Layers guide](blocks/layers.md) |
-| Wallet connection, account UI, transaction UX | `@1001-digital/layers.evm` | [Layers guide](blocks/layers.md) |
-| CSS variables, component tokens, design-system overrides | `@1001-digital/styles` through `layers` | [Layers guide](blocks/layers.md) |
-| Resilient on-chain data reads | `@1001-digital/dapp-query-core`, `@1001-digital/dapp-query-vue` | [Data guide](blocks/data.md) |
-| IPFS/IPNS/Arweave/eip155 fetching | `@1001-digital/dweb-fetch` | [Metadata guide](blocks/metadata.md) |
-| Canonical dweb URLs and raw CIDs | `@1001-digital/normalize-dweb-url` | [Metadata guide](blocks/metadata.md) |
-| NFT and contract metadata normalization | `@1001-digital/resolve-metadata` | [Metadata guide](blocks/metadata.md) |
-| Lightweight event indexing | `@1001-digital/simple-indexer` import from local built checkout | [Indexing guide](blocks/indexing.md) |
-| Ponder artifact and ENS caches | `@1001-digital/ponder-artifacts`, `@1001-digital/ponder-ens` | [Indexing guide](blocks/indexing.md) |
-| NFT contract extensions | `@1001-digital/erc721-extensions` | [Contracts guide](blocks/contracts.md) |
-| Address type helpers | `@1001-digital/check-address` | [Contracts guide](blocks/contracts.md) |
-| Proxy, diamond, clone, beacon detection | `@1001-digital/proxies` | [Contract intelligence guide](blocks/contract-intelligence.md) |
-| NatSpec from verified contracts | `@1001-digital/natspec` | [Contract intelligence guide](blocks/contract-intelligence.md) |
-| In-app wagmi wallet | `@1001-digital/wagmi-in-app-wallet` | [Wallet/auth guide](blocks/wallet-auth.md) |
-| AdonisJS SIWE sessions | `@1001-digital/adonis-siwe` | [Wallet/auth guide](blocks/wallet-auth.md) |
-| Own IPFS node/gateway/admin API | `1001-digital/ipfs.server` | [Infra guide](blocks/infra.md) |
+| Nuxt/Vue EVM app, wallet UX, transaction flows, base UI, CSS tokens | `@1001-digital/layers.evm` | [Layers](blocks/layers.md) |
+| Resilient indexed/RPC/HTTP reads | `@1001-digital/dapp-query-core`, `@1001-digital/dapp-query-vue` | [Data](blocks/data.md) |
+| Dweb URLs, IPFS/IPNS/Arweave fetches, NFT metadata | `@1001-digital/dweb-fetch`, `@1001-digital/normalize-dweb-url`, `@1001-digital/resolve-metadata` | [Metadata](blocks/metadata.md) |
+| Lightweight event indexing or Ponder metadata caches | `@1001-digital/simple-indexer`, `@1001-digital/ponder-artifacts`, `@1001-digital/ponder-ens` | [Indexing](blocks/indexing.md) |
+| NFT contract extensions and address checks | `@1001-digital/erc721-extensions`, `@1001-digital/check-address` | [Contracts](blocks/contracts.md) |
+| Proxy detection and verified-contract docs | `@1001-digital/proxies`, `@1001-digital/natspec` | [Contract Intelligence](blocks/contract-intelligence.md) |
+| In-app wallets and SIWE backend sessions | `@1001-digital/wagmi-in-app-wallet`, `@1001-digital/adonis-siwe` | [Wallet Auth](blocks/wallet-auth.md) |
+| Owned IPFS node/gateway/admin API | `1001-digital/ipfs.server` | [Infra](blocks/infra.md) |
 
 ## Agent Rules
 
-- Route by task first, package second.
-- Ask the prompter when missing product, style, chain, wallet, metadata, or infrastructure details would materially change the result.
-- Prefer `layers.evm` for Nuxt dapps that touch wallets or contracts.
-- Normalize decentralized URLs before storing them.
-- Normalize metadata before rendering it.
-- Use dapp-query when a direct RPC-only read would be fragile.
-- Use `simple-indexer` from a local/source checkout for small owned indexes; use the registry-published Ponder helpers inside Ponder apps.
-- When changing a 1001 app theme, set the browser `color-scheme`, override component tokens, and visually verify wallet connect/profile states.
-- Treat in-app wallets as local-key custody.
-- Treat IPFS server setup as infrastructure, not an app dependency.
-
-## Guide Template
-
-Each deep guide follows the same structure:
-
-- What to use this for
-- When not to use it
-- Packages/repos involved
-- Install commands
-- Minimal setup
-- Core APIs/components/contracts/config
-- Common pairings with other 1001 blocks
-- Practical implementation patterns
-- CSS/config/runtime/env details where relevant
-- Gotchas and failure modes
-- Agent checklist
+- Route by task before package name.
+- Start simple; add blocks only when the app needs them.
+- For Nuxt dapps that touch wallets or contracts, prefer `@1001-digital/layers.evm`.
+- Use the layer's components and CSS variables before inventing custom primitives.
+- Ask for missing product, style, chain, wallet, contract, metadata, or infrastructure details when the answer would change the build.
+- Inspect the source repo for exact APIs when a guide gives the concept but not a full reference.

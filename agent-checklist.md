@@ -1,47 +1,39 @@
 # Agent Build Checklist
 
-Use this before building a 1001 dapp from `llms.txt`. The goal is to avoid plausible but wrong assumptions, especially around product shape, chain setup, wallet UX, and visual customization.
+Use this before building from `llms.txt`. The goal is to catch the few decisions that change the shape of a dapp.
 
-## Ask Before Building
+## Ask If Missing
 
 Ask the prompter when any of these are missing and the choice would materially change the result:
 
-- Product goal: what the user should be able to do on the first screen.
-- Target users: collectors, creators, admins, developers, operators, or a mixed audience.
-- Style direction: brand references, mood, density, palette, typography, light/dark mode, and whether the app should feel editorial, operational, playful, gallery-like, or protocol-native.
-- Wallet UX: injected wallet only, WalletConnect, Safe App support, in-app wallet, SIWE, or guest/read-only mode.
-- Chain setup: target chains, default chain, RPC/indexer endpoints, block ranges, contract addresses, ABIs, and whether mock/local data is acceptable.
-- Metadata setup: expected token URI formats, IPFS/IPNS/Arweave gateways, media types, and fallback behavior.
-- Data freshness: live updates, cache lifetime, offline mode, optimistic updates, and whether direct RPC fallback is required.
-- Indexing scope: browser-local index, server process, Ponder app, reorg tolerance, and persistence requirements.
-- Deployment/infrastructure: whether the app needs its own IPFS gateway, auth server, or backend.
+- Product goal and first-screen user action.
+- Target users and style direction.
+- Wallet UX: read-only, injected wallet, WalletConnect, Safe, in-app wallet, or SIWE.
+- Chains, RPCs, contract addresses, ABIs, and whether mock data is acceptable.
+- Metadata sources and expected media formats.
+- Data needs: direct reads, fallback, cache, live updates, or indexing.
+- Backend/infrastructure ownership, including IPFS gateway or auth server.
 
-If only one or two details are missing, ask focused questions. If many are missing and the user wants momentum, state the assumptions before coding and keep them easy to change.
+If only small details are missing, state practical assumptions and keep them easy to change.
 
 ## Build Checks
 
-- Route by task through `llms.txt`, then read the relevant `blocks/*.md` guide before implementation.
-- Prefer `@1001-digital/layers.evm` for Nuxt/Vue apps that touch wallets or contracts.
-- Use the layer's wallet, account, transaction, form, dialog, and CSS token systems before creating app-specific primitives.
-- Normalize decentralized URLs before storing or rendering metadata.
-- Use `dapp-query` when a read needs fallback, cache, live updates, or multiple sources.
-- Use `simple-indexer` for small owned indexes; use Ponder helpers only inside Ponder apps.
-- Treat in-app wallets as local-key custody and explain that in product UI.
-- Treat `ipfs.server` as deployable infrastructure, not a frontend package.
+- Route through `llms.txt`, then read only the block guides needed for the task.
+- Start Nuxt/Vue EVM apps with `@1001-digital/layers.evm`.
+- Use 1001 wallet, account, transaction, form, dialog, and token systems before custom replacements.
+- Normalize decentralized URLs and metadata before rendering or storing.
+- Treat in-app wallets as local-key custody.
+- Treat `ipfs.server` as infrastructure, not a frontend dependency.
 
-## Visual QA Checks
+## Visual Checks
 
-- Verify the first viewport is the actual app experience, not a generic landing page.
-- Check desktop and mobile layouts for overflow, overlap, cramped labels, and text clipped inside buttons/cards.
-- Check disconnected wallet trigger, wallet selection dialog, in-app wallet setup, connected profile trigger, profile dialog, network switcher, and disconnect flow.
-- Check computed `color`, `background-color`, and disabled states for wallet buttons, primary buttons, inputs, dialogs, and toasts.
-- If the app customizes the 1001 design system, verify `color-scheme`, `--background`, `--color`, button tokens, input tokens, card tokens, and dialog tokens together.
-- Confirm hover/focus states are readable and do not shift layout.
-- Confirm custom CSS is global when it needs to affect dialogs, toasts, or wallet overlays.
+- Verify desktop and mobile layouts.
+- Check disconnected wallet, connected wallet/profile, dialogs, network switching, and disconnect states.
+- Check button/input/dialog contrast after theme overrides.
+- Prefer CSS variables first; use selector overrides only when a variable does not exist.
 
 ## Ship Checks
 
-- Run the repo's typecheck/test/build commands.
-- Verify links, env variable names, and local guide references.
-- Browser-test the primary user journey end to end.
-- Commit small logical batches so later agents can see why each change exists.
+- Run the repo's typecheck, tests, build, or docs validation.
+- Verify local guide links and source links.
+- Commit small logical batches.
