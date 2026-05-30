@@ -113,7 +113,13 @@ const indexedTransfers = graphqlSource({
     const [collection, tokenId] = args as [string, bigint]
     return { collection: collection.toLowerCase(), tokenId: tokenId.toString() }
   },
-  transform: (data: any) => data.transfers.items,
+  transform: (data: any) => data.transfers.items.map((row: any) => ({
+    from: row.from,
+    to: row.to,
+    tokenId: BigInt(row.tokenId),
+    block: BigInt(row.block),
+    transactionHash: row.transactionHash,
+  })),
 })
 ```
 

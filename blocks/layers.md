@@ -140,7 +140,7 @@ Auth:
 
 Base UI:
 
-- Use the layer's `Button`, `Card`, `Dialog`, `Form`, `FormLabel`, `Input`, `Dropdown`, `Sidebar`, `Toast`, `Tag`, `Tooltip`, `Actions`, and layout primitives before creating app-specific replacements.
+- Use the layer's `Button`, `Card`, `Dialog`, `Form`, `FormItem`, `FormLabel`, `FormTextarea`, `FormSelect`, `Dropdown`, `Sidebar`, `Tag`, `Tooltip`, `Actions`, `useToast`, `useConfirm`, and layout primitives before creating app-specific replacements.
 
 ## Common Patterns
 
