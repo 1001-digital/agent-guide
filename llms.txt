@@ -40,7 +40,7 @@ Default path for a Nuxt/Vue EVM dapp:
 
 - Guide: [`blocks/indexing.md`](blocks/indexing.md)
 - Sources: <https://github.com/1001-digital/simple-indexer>, <https://github.com/1001-digital/ponder-artifacts>, <https://github.com/1001-digital/ponder-ens>
-- Packages: `@1001-digital/simple-indexer`, `@1001-digital/ponder-artifacts`, `@1001-digital/ponder-ens`
+- Packages/repos: `simple-indexer` source checkout, `@1001-digital/ponder-artifacts`, `@1001-digital/ponder-ens`
 - Use for: small owned event indexes, browser/server stores, and Ponder-side artifact or ENS caches.
 
 ## NFT Contracts

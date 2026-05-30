@@ -26,7 +26,7 @@ Choose the smallest block that fits:
 - Source repo: <https://github.com/1001-digital/simple-indexer>
 - Source repo: <https://github.com/1001-digital/ponder-artifacts>
 - Source repo: <https://github.com/1001-digital/ponder-ens>
-- `@1001-digital/simple-indexer`: EVM event indexer with memory, IndexedDB, and SQLite stores.
+- `simple-indexer` source checkout: EVM event indexer with memory, IndexedDB, and SQLite stores.
 - `@1001-digital/ponder-artifacts`: NFT collection/token metadata cache and Hono routes for Ponder.
 - `@1001-digital/ponder-ens`: ENS profile cache and Hono routes for Ponder.
 

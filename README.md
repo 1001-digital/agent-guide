@@ -21,7 +21,7 @@ For a new Nuxt/Vue EVM dapp:
 | Nuxt/Vue EVM app, wallet UX, transaction flows, base UI, CSS tokens | `@1001-digital/layers.evm` | [Layers](blocks/layers.md) |
 | Resilient indexed/RPC/HTTP reads | `@1001-digital/dapp-query-core`, `@1001-digital/dapp-query-vue` | [Data](blocks/data.md) |
 | Dweb URLs, IPFS/IPNS/Arweave fetches, NFT metadata | `@1001-digital/dweb-fetch`, `@1001-digital/normalize-dweb-url`, `@1001-digital/resolve-metadata` | [Metadata](blocks/metadata.md) |
-| Lightweight event indexing or Ponder metadata caches | `@1001-digital/simple-indexer`, `@1001-digital/ponder-artifacts`, `@1001-digital/ponder-ens` | [Indexing](blocks/indexing.md) |
+| Lightweight event indexing or Ponder metadata caches | `simple-indexer` source checkout, `@1001-digital/ponder-artifacts`, `@1001-digital/ponder-ens` | [Indexing](blocks/indexing.md) |
 | NFT contract extensions and address checks | `@1001-digital/erc721-extensions`, `@1001-digital/check-address` | [Contracts](blocks/contracts.md) |
 | Proxy detection and verified-contract docs | `@1001-digital/proxies`, `@1001-digital/natspec` | [Contract Intelligence](blocks/contract-intelligence.md) |
 | In-app wallets and SIWE backend sessions | `@1001-digital/wagmi-in-app-wallet`, `@1001-digital/adonis-siwe` | [Wallet Auth](blocks/wallet-auth.md) |
