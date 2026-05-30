@@ -47,7 +47,9 @@ import { normalizeUri } from '@1001-digital/normalize-dweb-url'
 import { resolveTokenMetadata } from '@1001-digital/resolve-metadata'
 
 const dweb = createDwebFetch({
-  ipfs: { mode: 'gateway' },
+  ipfs: {
+    gateways: ['https://ipfs.io'],
+  },
 })
 
 export async function loadTokenMetadata(tokenUri: string) {
@@ -101,7 +103,6 @@ import { createDwebFetch } from '@1001-digital/dweb-fetch'
 
 export const dweb = createDwebFetch({
   ipfs: {
-    mode: 'gateway',
     gateways: ['https://ipfs.io'],
   },
   arweave: {
